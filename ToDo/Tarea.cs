@@ -29,16 +29,41 @@ namespace EspacioClases
 
             }
 
-        } // Validar que esté entre 10 y 100
-
-        // Puedes añadir un constructor y métodos auxiliares si lo consideras necesario
-
+        }
 
         public Tarea(int tareaID, string descripcion, int duracion)
         {
             this.TareaID = tareaID;
             this.Descripcion = descripcion;
             this.Duracion = duracion;
+        }
+
+
+        public static void MostrarTareas(List<Tarea> lista, string titulo)
+        {
+            Console.WriteLine($"\n{titulo}");
+            foreach (var tarea in lista)
+            {
+                Console.WriteLine($"ID:{tarea.TareaID} - Descripción:{tarea.Descripcion} - Duración:{tarea.Duracion} min");
+            }
+        }
+        
+        public static void BuscarPorDescripcion(List<Tarea> lista, string descripcionBuscada)
+        {
+            List<Tarea> tareasEncontradas = lista.Where(t => t.Descripcion.ToLower().Contains(descripcionBuscada.ToLower())).ToList();
+
+            if (tareasEncontradas.Any())
+            {
+                Console.WriteLine($"\nTareas encontradas con descripción que contiene \"{descripcionBuscada}\":");
+                foreach (var tarea in tareasEncontradas)
+                {
+                    Console.WriteLine($"ID:{tarea.TareaID} - Descripción:{tarea.Descripcion} - Duración:{tarea.Duracion} min");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"\nNo se encontraron tareas que contengan \"{descripcionBuscada}\".");
+            }
         }
 
 

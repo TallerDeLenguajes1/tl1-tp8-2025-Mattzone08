@@ -1,76 +1,117 @@
-﻿    using EspacioClases;
+﻿using EspacioClases;
 
-            static void MostrarTareas(List<Tarea> lista, string titulo){
 
-            Console.WriteLine($"\n{titulo}");
-            foreach (var tarea in lista)
-            {
-                Console.WriteLine($"ID:{tarea.TareaID} - Descripcion:{tarea.Descripcion} - Duracion:{tarea.Duracion} min");
-            }
+        string[] descrip = { "Codear", "Comer", "Rezar", "Trabajar", "Procesar", "Estudiar", "Practicar", "Dormir", "Vacunarse" };
 
-            }
+        List<Tarea> tareasPendientes = new List<Tarea>();
+        List<Tarea> tareasRealizadas = new List<Tarea>();
 
-    string[] descrip = { "Codear", "Comer", "Rezar", "Trabajar", "Procesar", "estudiar", "practicar", "Dormir", "Vacunarse"};
+        Random rnd = new Random();
 
-    List<Tarea> tareasPendientes = new List<Tarea>();
-    List<Tarea> tareasRealizadas = new List<Tarea>();
+        bool salir = false;
 
-    Random rnd = new Random();
-
-    int N = rnd.Next(1, 11);
-    int M = 0;
-
-    Console.WriteLine($"Se generaran {N} tareas Pendientes aleatorias. \n");
-
-    for (int i = 0; i < N; i++)
-    {
-        M = rnd.Next(0,9);
-
-        int id = i+1;
-        string descripcion = descrip[M];
-        int duracion = rnd.Next(10, 101);
-
-        Tarea nuevaTarea = new Tarea(id, descripcion,duracion);
-        tareasPendientes.Add(nuevaTarea);
-
-    }
-
-    string respuesta;
-
-    do
-    {
-        
-        MostrarTareas(tareasPendientes,"Tareas Pendientes:");
-
-        Console.WriteLine("\nIngrese el ID de la tarea que desea marcar como realizada: ");
-
-        if (int.TryParse(Console.ReadLine(), out int idSeleccionado))
+        while (!salir)
         {
-            Tarea tarea = tareasPendientes.Find(t => t.TareaID == idSeleccionado);
+            Console.WriteLine("----- MENÚ PRINCIPAL -----");
+            Console.WriteLine("1. Generar tareas pendientes aleatorias");
+            Console.WriteLine("2. Mostrar tareas pendientes");
+            Console.WriteLine("3. Mostrar tareas realizadas");
+            Console.WriteLine("4. Marcar tarea como realizada");
+            Console.WriteLine("5. Buscar tarea por descripción");
+            Console.WriteLine("6. Salir");
+            Console.Write("Ingrese una opción: ");
 
-            if (tarea != null)
-            {
-                tareasPendientes.Remove(tarea);
-                tareasRealizadas.Add(tarea);
-                Console.WriteLine("Tarea movida a realizadas.");
+            string opcion = Console.ReadLine();
+            Console.Clear();
 
-            }
-            else
+            switch (opcion)
             {
-                Console.WriteLine("No se encontro La tarea con ese ID.");
+                case "1":
+                    int N = rnd.Next(1, 11);
+                    Console.WriteLine($"Se generarán {N} tareas pendientes aleatorias.\n");
+
+                    tareasPendientes.Clear();
+
+                    for (int i = 0; i < N; i++)
+                    {
+                        int M = rnd.Next(0, descrip.Length);
+                        int id = i + 1;
+                        string descripcion = descrip[M];
+                        int duracion = rnd.Next(10, 101);
+
+                        Tarea nuevaTarea = new Tarea(id, descripcion, duracion);
+                        tareasPendientes.Add(nuevaTarea);
+                    }
+                    Console.WriteLine("Tareas generadas correctamente.\n");
+                    break;
+
+                case "2":
+                    if (tareasPendientes.Count > 0)
+                        Tarea.MostrarTareas(tareasPendientes, "Tareas Pendientes:");
+                    else
+                        Console.WriteLine("No hay tareas pendientes para mostrar.");
+                    Console.WriteLine();
+                    break;
+
+                case "3":
+                    if (tareasRealizadas.Count > 0)
+                        Tarea.MostrarTareas(tareasRealizadas, "Tareas Realizadas:");
+                    else
+                        Console.WriteLine("No hay tareas realizadas para mostrar.");
+                    Console.WriteLine();
+                    break;
+
+                case "4":
+                    if (tareasPendientes.Count == 0)
+                    {
+                        Console.WriteLine("No hay tareas pendientes para marcar como realizadas.\n");
+                        break;
+                    }
+
+                    Tarea.MostrarTareas(tareasPendientes, "Tareas Pendientes:");
+                    Console.Write("\nIngrese el ID de la tarea que desea marcar como realizada: ");
+
+                    if (int.TryParse(Console.ReadLine(), out int idSeleccionado))
+                    {
+                        Tarea tarea = tareasPendientes.Find(t => t.TareaID == idSeleccionado);
+                        if (tarea != null)
+                        {
+                            tareasPendientes.Remove(tarea);
+                            tareasRealizadas.Add(tarea);
+                            Console.WriteLine("Tarea movida a realizadas.\n");
+                        }
+                        else
+                        {
+                            Console.WriteLine("No se encontró la tarea con ese ID.\n");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Entrada inválida.\n");
+                    }
+                    break;
+
+                case "5":
+                    if (tareasPendientes.Count == 0)
+                    {
+                        Console.WriteLine("No hay tareas pendientes para buscar.\n");
+                        break;
+                    }
+
+                    Console.Write("Ingrese una descripción (o parte) a buscar en tareas pendientes: ");
+                    string texto = Console.ReadLine();
+                    Tarea.BuscarPorDescripcion(tareasPendientes, texto);
+                    Console.WriteLine();
+                    break;
+
+                case "6":
+                    salir = true;
+                    Console.WriteLine("Saliendo del programa...");
+                    break;
+
+                default:
+                    Console.WriteLine("Opción inválida. Intente nuevamente.\n");
+                    break;
             }
         }
-        else
-        {
-            Console.WriteLine("Entrada Invalida.");
-        }
     
-        Console.Write("\n¿Desea mover otra tarea? (s/n): ");
-        respuesta = Console.ReadLine().ToLower();
-        Console.Clear();
-    
-    } while (respuesta == "s");
-
-
-    MostrarTareas(tareasPendientes,"Tareas Pendientes:");
-    MostrarTareas(tareasRealizadas,"Tareas Realizadas:");
